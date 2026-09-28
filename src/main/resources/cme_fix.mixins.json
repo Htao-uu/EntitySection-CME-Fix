@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "com.hhusm.cmefix.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EntitySectionManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

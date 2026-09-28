@@ -1,0 +1,27 @@
+# Gradle / build output
+build/
+out/
+.gradle/
+.gradle-home/
+local-maven/
+run/
+run-data/
+
+# logs
+logs/
+*.log
+
+# build products (jars are attached to GitHub Releases, not committed)
+*.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini

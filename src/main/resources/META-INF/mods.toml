@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+# ★ 本 mod 修的是“逻辑服务端”的原版缺陷:
+#   - 专用服务器:装在服务端即可(客户端装不装都行);
+#   - 单人/局域网(自己是主机):要装在客户端(集成服务端跑在客户端进程里);
+#   displayTest = IGNORE_ALL_VERSION => 任意一侧缺失都不弹“mod 不匹配”红字。
+displayTest = "IGNORE_ALL_VERSION"
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+description = '''${mod_description}
+移植自 EntityGuardian(作者 AlpDerps,MIT 许可):把 PersistentEntitySectionManager 里
+"边遍历边可能被修改"的 Stream.forEach 换成"先快照再遍历",消除服务端在
+实体大量增删时的 ConcurrentModificationException。'''
+
+[[dependencies.${mod_id}]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "${forge_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "${minecraft_version_range}"
+    ordering = "NONE"
+    side = "BOTH"

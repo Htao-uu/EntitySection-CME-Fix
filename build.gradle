@@ -1,0 +1,90 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    runs {
+        client { workingDirectory project.file('run') }
+        server { workingDirectory project.file('run'); args '--nogui' }
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.aliyun.com/repository/public' }
+    maven { url = 'https://maven.aliyun.com/repository/central' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+}
+
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+        mod_authors: mod_authors, mod_description: mod_description
+]
+processResources {
+    // ★ 必须指定 UTF-8:默认会用平台编码(中文 Windows = GBK)读取模板,
+    //   否则 mods.toml 里的中文描述在成品里会变成乱码。
+    filteringCharset = 'UTF-8'
+    inputs.properties replaceProperties
+    replaceProperties.put 'file.jarVersion', project.version
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : mod_id,
+                "Specification-Vendor"    : mod_authors,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_authors,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                // ★ Forge 从 manifest 的这个属性读取 mixin 配置
+                "MixinConfigs"            : "${mod_id}.mixins.json"
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// 把成品 jar 复制到项目根目录(只声明单个输出文件,避免 Gradle 快照整个目录)
+tasks.register('copyJarToRoot') {
+    description = '把 build/libs 下的成品 jar 复制到项目根目录'
+    group = 'build'
+    def src = layout.buildDirectory.file("libs/${mod_id}-${mod_version}.jar")
+    def dst = file("${mod_id}-${mod_version}.jar")
+    inputs.file(src)
+    outputs.file(dst)
+    doLast {
+        java.nio.file.Files.copy(src.get().asFile.toPath(), dst.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        logger.lifecycle("copyJarToRoot: " + dst.name + " 已更新")
+    }
+}
+
+tasks.named('build') { finalizedBy 'copyJarToRoot' }
