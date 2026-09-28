@@ -12,7 +12,7 @@ import org.slf4j.Logger;
  * {@code ConcurrentModificationException}(表现为随机的"Exception in server tick loop"崩服)。
  *
  * <p>移植自 <a href="https://github.com/alppp/EntitySectionManager_CME_Fix">EntityGuardian</a>
- * (作者 AlpDerps,MIT 许可);上游针对 1.21 的 {@code updateChunkStatus},这里是 1.20.1 的对应方法。
+ * (作者 Dan Turcu / alppp,MIT 许可);上游针对 1.21 的 {@code updateChunkStatus},这里是 1.20.1 的对应方法。
  */
 @Mod(CmeFix.MODID)
 public class CmeFix {
